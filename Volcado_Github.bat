@@ -34,22 +34,24 @@ echo ===========================================================================
 echo  [1] Añadir cambios a DEVELOP
 echo  [2] Sincronizar / Actualizar MAIN desde DEVELOP
 echo  [3] Añadir cambios directamente a MAIN
-echo  [4] Deshacer último commit en DEVELOP
-echo  [5] Deshacer último commit en MAIN 
-echo  [6] Ver estado actual e historial rápido del repositorio
-echo  [7] Ayuda: ¿Qué hace cada opción?
-echo  [8] Salir
+echo  [4] CORREGIR MENSAJE del último commit (Amend + Force Push)
+echo  [5] Deshacer último commit en DEVELOP
+echo  [6] Deshacer último commit en MAIN 
+echo  [7] Ver estado actual e historial rápido del repositorio
+echo  [8] Ayuda: ¿Qué hace cada opción?
+echo  [9] Salir
 echo ================================================================================
-set /p opcion="Elige una opción (1-8): "
+set /p opcion="Elige una opción (1-9): "
 
 if "%opcion%"=="1" goto OP_DEVELOP
 if "%opcion%"=="2" goto OP_SYNC
 if "%opcion%"=="3" goto OP_MAIN_DIRECTO
-if "%opcion%"=="4" goto OP_ROLLBACK_DEV
-if "%opcion%"=="5" goto OP_ROLLBACK_MAIN
-if "%opcion%"=="6" goto OP_STATUS
-if "%opcion%"=="7" goto OP_AYUDA
-if "%opcion%"=="8" exit /b
+if "%opcion%"=="4" goto OP_AMEND_FIX
+if "%opcion%"=="5" goto OP_ROLLBACK_DEV
+if "%opcion%"=="6" goto OP_ROLLBACK_MAIN
+if "%opcion%"=="7" goto OP_STATUS
+if "%opcion%"=="8" goto OP_AYUDA
+if "%opcion%"=="9" exit /b
 
 echo.
 echo [ERROR] Opción no válida.
@@ -69,16 +71,18 @@ echo   [2] UPDATE      (Actualización o mejora)
 echo   [3] UPLOAD      (Subida de archivos o recursos)
 echo   [4] FEAT        (Nueva funcionalidad)
 echo   [5] DOCS        (Documentación)
-echo   [6] Personalizada (Escribir nueva etiqueta)
+echo   [6] DELETE      (Eliminación de archivos o carpetas)
+echo   [7] Personalizada (Escribir nueva etiqueta)
 echo.
-set /p tagChoice="Elige una opción (1-6): "
+set /p tagChoice="Elige una opción (1-7): "
 
 if "%tagChoice%"=="1" set TAG=FIX
 if "%tagChoice%"=="2" set TAG=UPDATE
 if "%tagChoice%"=="3" set TAG=UPLOAD
 if "%tagChoice%"=="4" set TAG=FEAT
 if "%tagChoice%"=="5" set TAG=DOCS
-if "%tagChoice%"=="6" (
+if "%tagChoice%"=="6" set TAG=DELETE
+if "%tagChoice%"=="7" (
     set /p customTag="Ingresa tu etiqueta personalizada: "
     for /f "delims=" %%i in ('powershell -Command "'!customTag!'.ToUpper()"') do set TAG=%%i
 )
@@ -139,7 +143,6 @@ goto MENU_PRINCIPAL
 :OP_MAIN_DIRECTO
 echo.
 echo --- AÑADIR CAMBIOS DIRECTAMENTE A MAIN ---
-:: Verificar si la rama main existe localmente, si no, crearla
 git show-ref --verify --quiet refs/heads/main
 if %errorlevel% neq 0 (
     echo [INFO] La rama 'main' no existía. Creándola ahora...
@@ -157,6 +160,21 @@ git checkout develop >nul 2>&1
 echo.
 echo ¡Cambios subidos directamente a main con éxito!
 echo [Verificación] Comprueba que el commit aparece en main en el repositorio remoto.
+pause
+goto MENU_PRINCIPAL
+
+:OP_AMEND_FIX
+echo.
+echo --- CORREGIR MENSAJE DEL ÚLTIMO COMMIT (AMEND) ---
+echo Esto sobrescribirá el último commit de la rama actual con un nuevo mensaje.
+call :OBTENER_MENSAJE_COMMIT
+git add .
+git commit --amend -m "!FINAL_COMMIT!"
+for /f "tokens=*" %%b in ('git branch --show-current') do set CURRENT_BRANCH=%%b
+git push origin %CURRENT_BRANCH% --force
+echo.
+echo ¡Commit corregido y actualizado en GitHub con éxito!
+echo [Verificación] Revisa tu historial y notarás que el mensaje anterior fue reemplazado limpiamente.
 pause
 goto MENU_PRINCIPAL
 
@@ -256,30 +274,15 @@ echo ===========================================================================
 echo                        GUÍA RÁPIDA - QUÉ HACE CADA OPCIÓN
 echo ================================================================================
 echo.
-echo  [1] Añadir cambios a DEVELOP:
-echo      Empaqueta tus modificaciones diarias y las sube a la rama de pruebas.
-echo.
-echo  [2] Sincronizar / Actualizar MAIN desde DEVELOP:
-echo      Toma todo lo probado en develop y lo fusiona limpiamente en main.
-echo.
-echo  [3] Añadir cambios directamente a MAIN:
-echo      Ideal para tu subida inicial del proyecto o cambios directos en producción.
-echo.
-echo  [4] Deshacer último commit en DEVELOP:
-echo      - Soft Reset: Borra el commit pero conserva tu código.
-echo      - Hard Reset: Borra el commit y el código por completo.
-echo.
-echo  [5] Deshacer último commit en MAIN:
-echo      Igual que la anterior, pero aplicada sobre main.
-echo.
-echo  [6] Ver estado actual e historial rápido:
-echo      Muestra 'git status' y un gráfico de los últimos commits.
-echo.
-echo  [7] Ayuda:
-echo      Muestra esta pantalla de referencia rápida.
-echo.
-echo  [8] Salir:
-echo      Cierra la ventana del gestor.
+echo  [1] Añadir cambios a DEVELOP: Empaqueta modificaciones diarias en pruebas.
+echo  [2] Sincronizar MAIN desde DEVELOP: Fusiona lo probado hacia producción.
+echo  [3] Añadir cambios directamente a MAIN: Sube directo a producción.
+echo  [4] CORREGIR MENSAJE (Amend): Modifica en caliente el último commit y lo fuerza.
+echo  [5] Deshacer último commit en DEVELOP: Soft o Hard Reset.
+echo  [6] Deshacer último commit en MAIN: Soft o Hard Reset en producción.
+echo  [7] Ver estado actual e historial rápido: Muestra el log gráfico.
+echo  [8] Ayuda: Muestra esta pantalla.
+echo  [9] Salir: Cierra el gestor.
 echo ================================================================================
 pause
 goto MENU_PRINCIPAL
