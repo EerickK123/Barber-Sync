@@ -1,0 +1,18 @@
+{
+  "APP": {
+    "LOADING": {
+      "LOGIN": "Iniciando sesion..."
+    }
+  },
+  "SERVER": {
+    "ERROR": {
+      "AUTH": {
+        "INVALID_DATA": "Invalid data format",
+        "INVALID_CREDENTIALS": "Incorrect Email or Password"
+      },
+      "CONNECTION": {
+        "REFUSE": "Connetion Error"
+      }
+    }
+  }
+}

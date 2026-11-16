@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "Agora-Corte-Clients",
+    "slug": "agora-corte-clients",
+    "scheme": "agora",
+    "version": "1.0.0",
+    "platforms": ["android", "ios"],
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+    },
+    "experiments": {
+      "tsconfigPaths": true
+    },
+    "plugins": ["expo-router", "expo-secure-store"],
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.agoracorte.clients",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "extra": {
+      "apiUrl": "http://192.168.101.8:5000/",
+      "router": {},
+      "eas": {
+        "projectId": "db6fad64-3c9c-4557-b3ff-6d6d60751204"
+      }
+    },
+    "owner": "ericoder_xx",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/db6fad64-3c9c-4557-b3ff-6d6d60751204"
+    }
+  }
+}
